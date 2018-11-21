@@ -1,4 +1,4 @@
-pushd ./src/api
+pushd ./src
 yarn install -s
 
 # Zip artifacts
