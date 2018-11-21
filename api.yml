@@ -130,6 +130,37 @@ Resources:
                 - xray:PutTelemetryRecords
                 Resource: '*'
 
+#     {
+# 	"Version": "2012-10-17",
+# 	"Statement": [{
+# 			"Effect": "Allow",
+# 			"Action": [
+# 				"dynamodb:BatchGetItem",
+# 				"dynamodb:GetItem",
+# 				"dynamodb:Query",
+# 				"dynamodb:Scan",
+# 				"dynamodb:BatchWriteItem",
+# 				"dynamodb:PutItem",
+# 				"dynamodb:UpdateItem"
+# 			],
+# 			"Resource": "arn:aws:dynamodb:eu-west-1:123456789012:table/Products"
+# 		},
+# 		{
+# 			"Effect": "Allow",
+# 			"Action": [
+# 				"logs:CreateLogStream",
+# 				"logs:PutLogEvents"
+# 			],
+# 			"Resource": "arn:aws:logs:eu-west-1:123456789012:*"
+# 		},
+# 		{
+# 			"Effect": "Allow",
+# 			"Action": "logs:CreateLogGroup",
+# 			"Resource": "*"
+# 		}
+# 	]
+# }
+
   ApiKey:
     Type: AWS::ApiGateway::ApiKey
     Properties:
