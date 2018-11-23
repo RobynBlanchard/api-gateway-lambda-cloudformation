@@ -1,13 +1,31 @@
 // const responses = require('./responses');
-// var AWS = require('aws-sdk');
+var AWS = require('aws-sdk');
 // var credentials = new AWS.SharedIniFileCredentials({profile: 'robyn'});
 // AWS.config.credentials = credentials;
 // AWS.config.update({region: 'eu-west-1'});
-
+AWS.config.update({region: 'eu-west-1'});
 // // Create the DynamoDB service object
-// ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
 
 
+// const AWS = require("aws-sdk");
+// const response = require("cfn-response");
+// const docClient = new AWS.DynamoDB.DocumentClient();
+// exports.handler = function(event, context) {
+//     console.log(JSON.stringify(event,null,2));
+//     var params = {
+//       TableName: event.ResourceProperties.DynamoTableName,
+//       Item:{
+//           "id": "abc123"
+//       }
+//   };
+// docClient.put(params, function(err, data) { if (err) {
+//   response.send(event, context, "FAILED", {});
+// } else {
+//   response.send(event, context, "SUCCESS", {});
+// }
+// });
+// };
 
 getProducts = () => {
   var params = {
