@@ -27,23 +27,9 @@ ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
 // });
 // };
 
-getProducts = () => {
-  var params = {
-    TableName: "Products"
-   };
-   ddb.scan(params, function(err, data) {
-    if (err) {
-      console.log(err, err.stack); // an error occurred
-    } else {
-      let items_;
-      data.Items.forEach(e => {
-        console.log(e.ProductID, e.Title, e.Price);
-        items_.push([e.ProductID, e.Title, e.Price]);
-      });
-      return items_
-    }
-  });
-}
+// getProducts = () => {
+  
+// }
 
 getProduct = id => {
   var params = {
@@ -61,23 +47,65 @@ getProduct = id => {
 }
 
 exports.router = (event, context, callback) => {
+  // const path = event.path;
+  // const httpMethod = event.httpMethod;
+  // const queryParams = event.queryStringParameters;
+
+  // if (path === "/products" && httpMethod === "GET") {
+  //   if (queryParams === null) {
+  //     const products = getProducts();
+  //     var response = responses.success(db);
+  //   } else if (queryParams.hasOwnProperty('id')) {
+  //     const productID = queryParams.id;
+  //     const product = getProduct(productID)
+  //     var response = responses.success(product);
+  //   } else {
+  //     var response =  responses.notFound();
+  //   }
+  // }
+  // callback(null, response);
   const path = event.path;
   const httpMethod = event.httpMethod;
-  const queryParams = event.queryStringParameters;
-
+  let response;
   if (path === "/products" && httpMethod === "GET") {
-    if (queryParams === null) {
-      const products = getProducts();
-      var response = responses.success(db);
-    } else if (queryParams.hasOwnProperty('id')) {
-      const productID = queryParams.id;
-      const product = getProduct(productID)
-      var response = responses.success(product);
-    } else {
-      var response =  responses.notFound();
-    }
+    var params = {
+      TableName: "Products"
+    };
+    ddb.scan(params, function(err, data) {
+      if (err) {
+        console.log(err, err.stack); // an error occurred
+        callback(err);
+      } else {
+        const prod = data.Items.map(item => {
+          return {
+            id: item.ProductID, 
+            title: item.Title, 
+            price: item.Price
+          }
+        });
+
+        callback(null, {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+          },
+          "body": JSON.stringify(prod),
+          "isBase64Encoded": false    
+        });
+         
+      }
+    });
+
+    // response = getProducts();
+
+
   }
-  callback(null, response);
+  
+
+  
+
+
 };
 
 

@@ -33,7 +33,7 @@ Resources:
     Properties:
       Timeout: 15
       FunctionName: !Sub ${AWS::StackName}-Foobar
-      Handler: index.router
+      Handler: src/index.router
       Runtime: nodejs8.10
       Code:
         S3Bucket: my-lambda-api2
@@ -117,26 +117,17 @@ Resources:
               -
                 Effect: Allow
                 Action:
-                - ec2:CreateNetworkInterface
-                - ec2:DescribeNetworkInterfaces
-                - ec2:DeleteNetworkInterface
-                - ec2:DetachNetworkInterface
-                - ec2:ModifyNetworkInterfaceAttribute
-                - ec2:ResetNetworkInterfaceAttribute
+                # - ec2:CreateNetworkInterface
+                # - ec2:DescribeNetworkInterfaces
+                # - ec2:DeleteNetworkInterface
+                # - ec2:DetachNetworkInterface
+                # - ec2:ModifyNetworkInterfaceAttribute
+                # - ec2:ResetNetworkInterfaceAttribute
                 - logs:CreateLogGroup
                 - logs:CreateLogStream
                 - logs:PutLogEvents
                 - xray:PutTraceSegments
                 - xray:PutTelemetryRecords
-                Resource: '*'
-        -
-          PolicyName: dynamodbAccessRole
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              -
-                Effect: Allow
-                Action:
                 - dynamodb:BatchGetItem
                 - dynamodb:GetItem
                 - dynamodb:Query
@@ -144,7 +135,23 @@ Resources:
                 - dynamodb:BatchWriteItem
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
-                Resouce: arn:aws:dynamodb:eu-west-1:327612306032:table/Products
+                Resource: '*'
+        # -
+        #   PolicyName: dynamodbAccessRole
+        #   PolicyDocument:
+        #     Version: 2012-10-17
+        #     Statement:
+        #       -
+        #         Effect: Allow
+        #         Action:
+        #         - dynamodb:BatchGetItem
+        #         - dynamodb:GetItem
+        #         - dynamodb:Query
+        #         - dynamodb:Scan
+        #         - dynamodb:BatchWriteItem
+        #         - dynamodb:PutItem
+        #         - dynamodb:UpdateItem
+        #         Resouce: arn:aws:dynamodb:eu-west-1:327612306032:table/Products
 
   ApiKey:
     Type: AWS::ApiGateway::ApiKey
