@@ -1,111 +1,78 @@
-// const responses = require('./responses');
-var AWS = require('aws-sdk');
-// var credentials = new AWS.SharedIniFileCredentials({profile: 'robyn'});
-// AWS.config.credentials = credentials;
-// AWS.config.update({region: 'eu-west-1'});
-AWS.config.update({region: 'eu-west-1'});
-// // Create the DynamoDB service object
-ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+const responses = require("./responses");
+var AWS = require("aws-sdk");
+AWS.config.update({ region: "eu-west-1" });
+ddb = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
 
-
-// const AWS = require("aws-sdk");
-// const response = require("cfn-response");
-// const docClient = new AWS.DynamoDB.DocumentClient();
-// exports.handler = function(event, context) {
-//     console.log(JSON.stringify(event,null,2));
-//     var params = {
-//       TableName: event.ResourceProperties.DynamoTableName,
-//       Item:{
-//           "id": "abc123"
-//       }
-//   };
-// docClient.put(params, function(err, data) { if (err) {
-//   response.send(event, context, "FAILED", {});
-// } else {
-//   response.send(event, context, "SUCCESS", {});
-// }
-// });
-// };
-
-// getProducts = () => {
-  
-// }
-
-getProduct = id => {
-  var params = {
-    Key: {
-     "ProductID": {
-       N: `"${id}"`
-      },
-    },
-    TableName: "Products"
-   };
-  ddb.getItem(params, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
-    else     return data           // successful response
-  });
-}
-
-exports.router = (event, context, callback) => {
-  // const path = event.path;
-  // const httpMethod = event.httpMethod;
-  // const queryParams = event.queryStringParameters;
-
-  // if (path === "/products" && httpMethod === "GET") {
-  //   if (queryParams === null) {
-  //     const products = getProducts();
-  //     var response = responses.success(db);
-  //   } else if (queryParams.hasOwnProperty('id')) {
-  //     const productID = queryParams.id;
-  //     const product = getProduct(productID)
-  //     var response = responses.success(product);
-  //   } else {
-  //     var response =  responses.notFound();
-  //   }
-  // }
-  // callback(null, response);
-  const path = event.path;
-  const httpMethod = event.httpMethod;
-  let response;
-  if (path === "/products" && httpMethod === "GET") {
+getProducts = () => {
+  return new Promise((resolve, reject) => {
     var params = {
       TableName: "Products"
     };
+
     ddb.scan(params, function(err, data) {
       if (err) {
         console.log(err, err.stack); // an error occurred
-        callback(err);
+        reject(err);
       } else {
         const prod = data.Items.map(item => {
           return {
-            id: item.ProductID, 
-            title: item.Title, 
+            id: item.ProductID,
+            title: item.Title,
             price: item.Price
-          }
+          };
         });
 
-        callback(null, {
-          "statusCode": 200,
-          "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json"
-          },
-          "body": JSON.stringify(prod),
-          "isBase64Encoded": false    
-        });
-         
+        resolve(prod);
+      }
+    });
+  });
+};
+
+exports.router = (event, context, callback) => {
+  if (event.path === "/products" && event.httpMethod === "GET") {
+    const products = getProducts();
+    products
+      .then(data => callback(null, responses.success(data)))
+      .catch(error => callback(null, responses.notFound));
+  }
+};
+
+// option 1
+/*
+  const done = (err, res) =>
+    callback(null, {
+      statusCode: err ? "400" : "200",
+      body: err ? err.message : JSON.stringify(res),
+      headers: {
+        "Content-Type": "application/json"
       }
     });
 
-    // response = getProducts();
+  if (event.path === "/products") {
+    switch (event.httpMethod) {
+      case "GET":
+        if (event.queryStringParameters === null) {
+          ddb.scan({ TableName: "Products" }, done);
+          break;
+        } else if (event.queryStringParameters.hasOwnProperty("id")) {
+          var params = {
+            Key: {
+              ProductID: {
+                N: `"${event.queryStringParameters.id}"`
+              }
+            },
+            TableName: "Products"
+          };
+          ddb.getItem(params, done);
+        }
 
-
+      default:
+        callback("err");
+    }
   }
-  
+*/
+// option 2
 
-  
+// TODO - understand calllbacks
 
-
-};
-
-
+if (process.env.TESTING === "true") exports.router("", "", console.log);
