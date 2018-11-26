@@ -1,40 +1,50 @@
-const responses = require("./responses");
 var AWS = require("aws-sdk");
 AWS.config.update({ region: "eu-west-1" });
 ddb = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
 
-getProducts = () => {
-  return new Promise((resolve, reject) => {
-    var params = {
-      TableName: "Products"
-    };
-
-    ddb.scan(params, function(err, data) {
-      if (err) {
-        console.log(err, err.stack); // an error occurred
-        reject(err);
-      } else {
-        const prod = data.Items.map(item => {
-          return {
-            id: item.ProductID,
-            title: item.Title,
-            price: item.Price
-          };
-        });
-
-        resolve(prod);
-      }
-    });
-  });
-};
+const responses = require("./responses");
+const operations = require("./operations");
 
 exports.router = (event, context, callback) => {
   if (event.path === "/products" && event.httpMethod === "GET") {
-    const products = getProducts();
-    products
-      .then(data => callback(null, responses.success(data)))
-      .catch(error => callback(null, responses.notFound));
+    if (event.queryStringParameters === null) {
+      const products = operations.getProducts();
+      products
+        .then(data => callback(null, responses.success(data)))
+        .catch(error => callback(null, responses.notFound));
+    } else if (event.queryStringParameters.hasOwnProperty("id")) {
+      const products = operations.getProduct(event.queryStringParameters.id);
+      products
+        .then(data => callback(null, responses.success(data)))
+        .catch(error => callback(null, responses.notFound));
+    }
+  } else if (event.path === "/products" && event.httpMethod === "POST") {
+    const product = event.body;
+    const response = operations.putProduct(product);
+    if (!product.ProductID || !product.Title || !product.Price) {
+      callback(null, JSON.stringify("Missing required information"));
+    } else {
+      response
+        .then(data => callback(null, responses.success(data)))
+        .catch(error => callback(null, responses.notFound));
+    }
   }
+  // For testing
+  // let data = {
+  //   event: event
+  // };
+  // let response = {
+  //   statusCode: 200,
+  //   headers: {
+  //     "Access-Control-Allow-Origin": "*",
+  //     "Content-Type": "application/json"
+  //   },
+  //   body: JSON.stringify(data),
+  //   isBase64Encoded: false
+  // };
+  // callback(null, response);
+
+  // queryStringParameters":{"id":"1"}
 };
 
 // option 1
@@ -75,4 +85,4 @@ exports.router = (event, context, callback) => {
 
 // TODO - understand calllbacks
 
-if (process.env.TESTING === "true") exports.router("", "", console.log);
+// if (process.env.TESTING === "true") exports.router("", "", console.log);

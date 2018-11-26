@@ -1,18 +1,13 @@
-var AWS = require('aws-sdk');
-var credentials = new AWS.SharedIniFileCredentials({profile: 'robyn'});
+var AWS = require("aws-sdk");
+var credentials = new AWS.SharedIniFileCredentials({ profile: "robyn" });
 AWS.config.credentials = credentials;
-AWS.config.update({region: 'eu-west-1'});
+AWS.config.update({ region: "eu-west-1" });
 
 // Create the DynamoDB service object
-ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+ddb = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
 
 // var params = {
 //   TableName: 'Products',
-// //   Item: {
-// //     'ProductID' : {N: '1'},
-// //     'Title' : {S: 'little bag of happiness'},
-// //     'Price' : {N: '2500'}
-// //   }
 //     Item: {
 //         'ProductID' : {N: '5'},
 //         'Title' : {S: 'lava lamp'},
@@ -31,31 +26,31 @@ ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
 
 var params2 = {
   RequestItems: {
-    "Products": [
+    Products: [
       {
         PutRequest: {
           Item: {
-            'ProductID': { N: '6' },
-            'Title': { S: 'pewter photo frame' },
-            'Price': { N: '3200' }
+            ProductID: { N: "6" },
+            Title: { S: "pewter photo frame" },
+            Price: { N: "3200" }
           }
         }
       },
       {
         PutRequest: {
           Item: {
-            'ProductID': { N: '7' },
-            'Title': { S: 'birthstone necklace' },
-            'Price': { N: '4500' }
+            ProductID: { N: "7" },
+            Title: { S: "birthstone necklace" },
+            Price: { N: "4500" }
           }
         }
       },
       {
         PutRequest: {
           Item: {
-            'ProductID': { N: '8' },
-            'Title': { S: 'life sized cow' },
-            'Price': { N: '78000' }
+            ProductID: { N: "8" },
+            Title: { S: "life sized cow" },
+            Price: { N: "78000" }
           }
         }
       }
@@ -72,22 +67,21 @@ var params2 = {
 
 var params = {
   Key: {
-   "ProductID": {
-     N: "1"
-    },
+    ProductID: {
+      N: "1"
+    }
   },
   TableName: "Products"
- };
+};
 //  ddb.getItem(params, function(err, data) {
 //    if (err) console.log(err, err.stack); // an error occurred
 //    else     console.log(data);           // successful response
 //  });
 
-
 var params3 = {
   TableName: "Products"
- };
- ddb.scan(params3, function(err, data) {
+};
+ddb.scan(params3, function(err, data) {
   if (err) {
     console.log(err, err.stack); // an error occurred
   } else {
