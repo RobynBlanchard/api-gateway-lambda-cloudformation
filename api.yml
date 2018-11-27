@@ -1,4 +1,3 @@
-
 AWSTemplateFormatVersion: 2010-09-09
 Description: Serverless API boilerplate
 
@@ -27,7 +26,6 @@ Parameters:
   #   Default: apitest.degu.io
 
 Resources:
-
   LambdaFnc:
     Type: AWS::Lambda::Function
     Properties:
@@ -60,7 +58,7 @@ Resources:
             name: x-api-key
             in: header
         paths:
-          '/{proxy+}':
+          "/{proxy+}":
             x-amazon-apigateway-any-method:
               security:
                 - api_key: []
@@ -100,8 +98,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal:
               Service:
                 - lambda.amazonaws.com
@@ -109,33 +106,32 @@ Resources:
               - sts:AssumeRole
       Path: /
       Policies:
-        -
-          PolicyName: root
+        - PolicyName: root
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              -
-                Effect: Allow
+              - Effect: Allow
                 Action:
-                # - ec2:CreateNetworkInterface
-                # - ec2:DescribeNetworkInterfaces
-                # - ec2:DeleteNetworkInterface
-                # - ec2:DetachNetworkInterface
-                # - ec2:ModifyNetworkInterfaceAttribute
-                # - ec2:ResetNetworkInterfaceAttribute
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-                - xray:PutTraceSegments
-                - xray:PutTelemetryRecords
-                - dynamodb:BatchGetItem
-                - dynamodb:GetItem
-                - dynamodb:Query
-                - dynamodb:Scan
-                - dynamodb:BatchWriteItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                Resource: '*'
+                  # - ec2:CreateNetworkInterface
+                  # - ec2:DescribeNetworkInterfaces
+                  # - ec2:DeleteNetworkInterface
+                  # - ec2:DetachNetworkInterface
+                  # - ec2:ModifyNetworkInterfaceAttribute
+                  # - ec2:ResetNetworkInterfaceAttribute
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - xray:PutTraceSegments
+                  - xray:PutTelemetryRecords
+                  - dynamodb:BatchGetItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource: "*"
         # -
         #   PolicyName: dynamodbAccessRole
         #   PolicyDocument:
@@ -183,7 +179,6 @@ Resources:
       KeyId: !Ref ApiKey
       KeyType: API_KEY
       UsagePlanId: !Ref UsagePlan
-
   # ApiMapping:
   #   Type: AWS::ApiGateway::BasePathMapping
   #   Properties:
