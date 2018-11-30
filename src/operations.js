@@ -1,12 +1,11 @@
 exports.getProducts = () => {
   return new Promise((resolve, reject) => {
     var params = {
-      TableName: "Products"
+      TableName: 'Products'
     };
 
     ddb.scan(params, function(err, data) {
       if (err) {
-        console.log(err, err.stack);
         reject(err);
       } else {
         resolve(data);
@@ -23,11 +22,10 @@ exports.getProduct = id => {
           N: `${id}`
         }
       },
-      TableName: "Products"
+      TableName: 'Products'
     };
     ddb.getItem(params, function(err, data) {
       if (err) {
-        console.log(err, err.stack);
         reject(err);
       } else {
         resolve(data);
@@ -39,18 +37,22 @@ exports.getProduct = id => {
 exports.putProduct = product => {
   return new Promise((resolve, reject) => {
     var params = {
-      TableName: "Products",
+      TableName: 'Products',
       Item: {
-        ProductID: { N: `${product.ProductID.toString()}` },
-        Title: { S: `${product.Title.toString()}` },
-        Price: { N: `${product.Price}` }
+        ProductID: {
+          N: `${product.ProductID.toString()}`
+        },
+        Title: {
+          S: `${product.Title.toString()}`
+        },
+        Price: {
+          N: `${product.Price}`
+        }
       }
     };
 
-    // Call DynamoDB to add the item to the table
     ddb.putItem(params, function(err, data) {
       if (err) {
-        console.log(err, err.stack);
         reject(err);
       } else {
         resolve(data);
@@ -67,11 +69,10 @@ exports.deleteProduct = id => {
           N: `${id}`
         }
       },
-      TableName: "Products"
+      TableName: 'Products'
     };
     ddb.deleteItem(params, function(err, data) {
       if (err) {
-        console.log(err, err.stack);
         reject(err);
       } else {
         resolve(data);

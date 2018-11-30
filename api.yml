@@ -2,47 +2,22 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Serverless API boilerplate
 
 Parameters:
-  # DbConn:
-  #   Description: The connection string of the database
-  #   Type: String
-  #   NoEcho: true
-  # Bucket:
-  #   Description: bucket for the lambda function zip file
-  #   Type: String
   S3Key:
     Description: zip of the lambda
     Type: String
-  # SecurityGroupIds:
-  #   Description: List of security groups
-  #   Type: String
-  #   Default: sg-xxxxxxxx
-  # SubnetIds:
-  #   Description: List of subnets
-  #   Type: String
-  #   Default: subnet-xxxxxxxx,subnet-xxxxxxxx,subnet-xxxxxxxx
-  # ApiHostname:
-  #   Description: hostname for the api
-  #   Type: String
-  #   Default: apitest.degu.io
 
 Resources:
   LambdaFnc:
     Type: AWS::Lambda::Function
     Properties:
       Timeout: 15
-      FunctionName: !Sub ${AWS::StackName}-Foobar
+      FunctionName: !Sub ${AWS::StackName}
       Handler: src/index.router
       Runtime: nodejs8.10
       Code:
-        S3Bucket: my-lambda-api2
+        S3Bucket: product-api
         S3Key: !Ref S3Key
-      # VpcConfig:
-      #   SecurityGroupIds: !Ref SecurityGroupIds
-      #   SubnetIds: !Ref SubnetIds
       Role: !GetAtt LambdaRole.Arn
-      # Environment:
-      #   Variables:
-      #     DB: !Ref DbConn
 
   ApiGateway:
     Type: AWS::ApiGateway::RestApi
@@ -58,7 +33,7 @@ Resources:
             name: x-api-key
             in: header
         paths:
-          "/{proxy+}":
+          '/{proxy+}':
             x-amazon-apigateway-any-method:
               security:
                 - api_key: []
@@ -112,12 +87,6 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  # - ec2:CreateNetworkInterface
-                  # - ec2:DescribeNetworkInterfaces
-                  # - ec2:DeleteNetworkInterface
-                  # - ec2:DetachNetworkInterface
-                  # - ec2:ModifyNetworkInterfaceAttribute
-                  # - ec2:ResetNetworkInterfaceAttribute
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
@@ -131,28 +100,13 @@ Resources:
                   - dynamodb:PutItem
                   - dynamodb:UpdateItem
                   - dynamodb:DeleteItem
-                Resource: "*"
-        # -
-        #   PolicyName: dynamodbAccessRole
-        #   PolicyDocument:
-        #     Version: 2012-10-17
-        #     Statement:
-        #       -
-        #         Effect: Allow
-        #         Action:
-        #         - dynamodb:BatchGetItem
-        #         - dynamodb:GetItem
-        #         - dynamodb:Query
-        #         - dynamodb:Scan
-        #         - dynamodb:BatchWriteItem
-        #         - dynamodb:PutItem
-        #         - dynamodb:UpdateItem
+                Resource: '*'
         #         Resouce: arn:aws:dynamodb:eu-west-1:327612306032:table/Products
 
   ApiKey:
     Type: AWS::ApiGateway::ApiKey
     Properties:
-      Name: !Sub ${AWS::StackName}-ApiKey
+      Name: !Sub ${AWS::StackName}
       Enabled: true
       StageKeys:
         - RestApiId:
@@ -179,10 +133,3 @@ Resources:
       KeyId: !Ref ApiKey
       KeyType: API_KEY
       UsagePlanId: !Ref UsagePlan
-  # ApiMapping:
-  #   Type: AWS::ApiGateway::BasePathMapping
-  #   Properties:
-  #     BasePath: !Ref AWS::StackName
-  #     DomainName: !Ref ApiHostname
-  #     RestApiId: !Ref ApiGateway
-  #     Stage: !Ref Stage

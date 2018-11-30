@@ -1,28 +1,30 @@
-const operations = require("./operations");
+const operations = require('./operations');
+const responses = require('./responses');
 
 exports.handleRequest = (event, context) => {
-  if (event.path === "/products") {
+  if (event.path === '/products') {
     let response;
 
     switch (event.httpMethod) {
-      case "GET":
+      case 'GET':
         if (event.queryStringParameters === null) {
           response = operations.getProducts();
-        } else if (event.queryStringParameters.hasOwnProperty("id")) {
+        } else if (event.queryStringParameters.hasOwnProperty('id')) {
           response = operations.getProduct(event.queryStringParameters.id);
         }
         break;
 
-      case "POST":
+      case 'POST':
         const product = JSON.parse(event.body);
         if (!product.ProductID || !product.Title || !product.Price) {
-          callback(null, JSON.stringify("All fields are required"));
+          // return dif response code
+          callback(null, JSON.stringify('All fields are required'));
         } else {
           response = operations.putProduct(product);
         }
         break;
 
-      case "DELETE":
+      case 'DELETE':
         response = operations.deleteProduct(event.queryStringParameters.id);
         break;
 
