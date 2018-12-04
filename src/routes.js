@@ -7,11 +7,12 @@ exports.handleRequest = (event, context) => {
 
     switch (event.httpMethod) {
       case 'GET':
-        if (event.queryStringParameters === null) {
-          response = operations.getProducts();
-        } else if (event.queryStringParameters.hasOwnProperty('id')) {
+        // or if not null - get the property and pass it in - so could be title etc.
+        if (event.queryStringParameters.hasOwnProperty('id')) {
           response = operations.getProduct(event.queryStringParameters.id);
         }
+        // if (event.queryStringParameters === null) {
+        response = operations.getProducts();
         break;
 
       case 'POST':
@@ -26,6 +27,10 @@ exports.handleRequest = (event, context) => {
 
       case 'DELETE':
         response = operations.deleteProduct(event.queryStringParameters.id);
+        break;
+
+      case PUT:
+        response = operations.putItem(event.queryStringParameters.id);
         break;
 
       default:
