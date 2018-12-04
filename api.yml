@@ -48,8 +48,7 @@ Resources:
   Stage:
     Type: AWS::ApiGateway::Stage
     Properties:
-      CacheClusterEnabled: true
-      CacheClusterSize: 1.6
+      CacheClusterEnabled: false # costs money!
       StageName: stage
       Description: Stage
       RestApiId: !Ref ApiGateway
