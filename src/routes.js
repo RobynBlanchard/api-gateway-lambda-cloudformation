@@ -7,14 +7,18 @@ exports.handleRequest = (event, context) => {
 
     switch (event.httpMethod) {
       case 'GET':
-        // or if not null - get the property and pass it in - so could be title etc.
-        if (event.queryStringParameters.hasOwnProperty('id')) {
+      if (event.path === "/products" && event.httpMethod === "GET") {
+        if (event.queryStringParameters === null) {
+          response = operations.getProducts();
+        } else if (event.queryStringParameters.hasOwnProperty('id')) {
           response = operations.getProduct(event.queryStringParameters.id);
+        } else {
+          // TODO
+          response = operations.getProducts();
         }
-        // if (event.queryStringParameters === null) {
-        response = operations.getProducts();
         break;
-
+      }
+      
       case 'POST':
         const product = JSON.parse(event.body);
         if (!product.ProductID || !product.Title || !product.Price) {
