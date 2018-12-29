@@ -34,15 +34,56 @@ Resources:
             in: header
         paths:
           '/{proxy+}':
-            x-amazon-apigateway-any-method:
-              security:
-                - api_key: []
-              responses: {}
-              x-amazon-apigateway-integration:
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFnc.Arn}/invocations
-                httpMethod: POST
-                type: aws_proxy
+
+              x-amazon-apigateway-any-method:
+                security:
+                  - api_key: []
+                produces:
+                - application/json
+                parameters:
+                - name: proxy
+                  in: path
+                  required: true
+                  type: string
+                responses: {}
+                x-amazon-apigateway-integration:
+                  uri: 
+                    Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFnc.Arn}/invocations
+                  httpMethod: POST
+                  type: aws_proxy
+              options:
+                consumes:
+                - application/json
+                produces:
+                - application/json
+                responses:
+                  '200':
+                    description: 200 response
+                    schema:
+                      $ref: "#/definitions/Empty"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: string
+                      Access-Control-Allow-Methods:
+                        type: string
+                      Access-Control-Allow-Headers:
+                        type: string
+                x-amazon-apigateway-integration:
+                  responses:
+                    default:
+                      statusCode: 200
+                      responseParameters:
+                        method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                        method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                        method.response.header.Access-Control-Allow-Origin: "'*'"
+                  passthroughBehavior: when_no_match
+                  requestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                  type: mock
+          definitions:
+            Empty:
+              type: object
+              title: Empty Schema
       Name: !Ref AWS::StackName
 
   Stage:
@@ -132,3 +173,34 @@ Resources:
       KeyId: !Ref ApiKey
       KeyType: API_KEY
       UsagePlanId: !Ref UsagePlan
+
+  # OptionsMethod:
+  #   Type: AWS::ApiGateway::Method
+  #   Properties:
+  #     AuthorizationType: NONE
+  #     RestApiId:
+  #       Ref: ApiGateway
+  #     ResourceId:
+  #       Ref: ApiGateway
+  #     HttpMethod: OPTIONS
+  #     Integration:
+  #       IntegrationResponses:
+  #       - StatusCode: 200
+  #         ResponseParameters:
+  #           method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+  #           method.response.header.Access-Control-Allow-Methods: "'POST,GET,PUT,DELETE,UPDATE,OPTIONS'"
+  #           method.response.header.Access-Control-Allow-Origin: "'*'"
+  #         ResponseTemplates:
+  #           application/json: ''
+  #       PassthroughBehavior: WHEN_NO_MATCH
+  #       RequestTemplates:
+  #         application/json: '{"statusCode": 200}'
+  #       Type: MOCK
+  #     MethodResponses:
+  #     - StatusCode: 200
+  #       ResponseModels:
+  #         application/json: 'Empty'
+  #       ResponseParameters:
+  #           method.response.header.Access-Control-Allow-Headers: false
+  #           method.response.header.Access-Control-Allow-Methods: false
+  #           method.response.header.Access-Control-Allow-Origin: false
